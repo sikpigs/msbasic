@@ -79,6 +79,10 @@
 .endif
 		keyword_rts "NEW", NEW
 
+.ifdef PLBS
+		keyword_rts "LCDCMD", LCDCMD
+		keyword_rts "LCDPRINT", LCDPRINT
+.endif ; PLBS
 		count_tokens
 
 		keyword	"TAB(", TOKEN_TAB

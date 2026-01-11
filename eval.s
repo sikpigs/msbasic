@@ -333,6 +333,12 @@ L2D31:
 L2D36:
         jmp     FIN
 L2D39:
+.ifdef PLBS
+        cmp     #'&'
+        bne     :+
+        jmp     PARSE_BASE_NUMBER
+:
+.endif ; PLBS
         jsr     ISLETC
         bcs     FRM_VARIABLE
 .ifdef CONFIG_CBM_ALL
@@ -786,3 +792,105 @@ LCE49:
         sta     ZD4
         jmp     ZERO_FAC
 .endif
+
+.ifdef PLBS
+PARSE_BASE_NUMBER:
+        jsr     CHRGET                  ; Consume '&'
+
+        ora     #$20                    ; Make lowercase
+
+        cmp     #'h'
+        beq     @BASE_HEX
+        cmp     #'o'
+        beq     @BASE_OCTAL
+        cmp     #'b'
+        beq     @BASE_BINARY
+        cmp     #'d'
+        beq     @BASE_DECIMAL
+
+        jmp     @PARSE_BASE_NUMBER_DONE
+
+@BASE_HEX:
+        lda     #16
+        jmp     @STORE_NUMBASE
+
+@BASE_OCTAL:
+        lda     #8
+        jmp     @STORE_NUMBASE
+
+@BASE_BINARY:
+        lda     #2
+        jmp     @STORE_NUMBASE
+
+@BASE_DECIMAL:
+        lda     #10
+
+@STORE_NUMBASE:
+        sta     NUMBASE
+
+        jsr     ZERO_FAC
+
+        jsr     CHRGET
+
+@PARSE_BASE_DIGIT:
+        ; is 0-9?
+        cmp     #'0'
+        bcc     @PARSE_BASE_NUMBER_DONE
+        cmp     #'9' + 1
+        bcc     @DIGIT_09
+
+        ora     #$20                    ; Make lowercase
+
+        ; is a-f?
+        cmp     #'a'
+        bcc     @PARSE_BASE_NUMBER_DONE
+        cmp     #'f' + 1
+        bcs     @PARSE_BASE_NUMBER_DONE
+
+        ; convert 'a'-'f' to 0-15
+        sec
+        sbc     #'a' - 10
+        jmp     @GOT_DIGIT
+
+@DIGIT_09:
+        ; convert '0'-'9' to 0-9
+        sec
+        sbc     #'0'
+
+@GOT_DIGIT:
+        ; bail if digit is greater than NUMBASE
+        cmp     NUMBASE
+        bcs     @PARSE_BASE_NUMBER_DONE
+
+        pha                             ; Save digit
+
+        jsr     @SAVE_FAC               ; Copy FAC to TMP_FAC
+        lda     NUMBASE
+        jsr     FLOAT                   ; value of NUMBASE now in FAC
+
+        ldy     #>TMP_FAC
+        lda     #<TMP_FAC
+        jsr     FMULT
+        jsr     @SAVE_FAC               ; Copy FAC to TMP_FAC
+
+        pla
+        jsr     FLOAT                   ; digit value now in FAC
+        
+        ldy     #>TMP_FAC
+        lda     #<TMP_FAC
+        jsr     FADD
+
+        jsr     CHRGET
+
+        bne     @PARSE_BASE_DIGIT
+
+@PARSE_BASE_NUMBER_DONE:
+        rts
+
+@SAVE_FAC:
+        ldy     #>TMP_FAC
+        ldx     #<TMP_FAC
+        jsr     STORE_FAC_AT_YX_ROUNDED
+        rts
+
+.endif ; PLBS

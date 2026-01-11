@@ -1,6 +1,6 @@
 .segment "CODE"
 
-.ifndef CONFIG_NO_INPUTBUFFER_ZP
+.if .defined(PLBS) || !.defined(CONFIG_NO_INPUTBUFFER_ZP)
 L2420:
   .ifdef OSI
         jsr     OUTDO
@@ -58,6 +58,10 @@ INLINAIM:
         cmp     #$07
         beq     L2443
     .endif
+    .ifdef PLBS
+        cmp     #$08 ; BS
+        beq     L2420
+    .endif ; PLBS
         cmp     #$0D
         beq     L2453
     .ifndef CONFIG_NO_LINE_EDITING

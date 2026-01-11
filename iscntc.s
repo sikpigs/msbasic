@@ -26,4 +26,7 @@
 .ifdef SYM1
 .include "sym1_iscntc.s"
 .endif
+.ifdef PLBS
+.include "plumbus_iscntc.s"
+.endif
 ;!!! runs into "STOP"
