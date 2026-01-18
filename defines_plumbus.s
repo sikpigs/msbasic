@@ -33,6 +33,7 @@ RAMSTART2 := $4000
 .import putchar
 .import putchar_lcd
 .import PRBYTE
+.import uptime_print
 
 ; monitor functions
 MONCOUT	:= putchar
@@ -40,4 +41,8 @@ MONRDKEY := getchar
 
 LOAD:
 SAVE:
+    rts
+
+UPTIME:
+    jsr     uptime_print
     rts

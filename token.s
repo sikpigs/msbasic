@@ -82,6 +82,7 @@
 .ifdef PLBS
 		keyword_rts "LCDCMD", LCDCMD
 		keyword_rts "LCDPRINT", LCDPRINT
+		keyword_rts "UPTIME", UPTIME
 .endif ; PLBS
 		count_tokens
 
