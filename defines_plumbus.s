@@ -1,11 +1,12 @@
+.include "structs.inc"
+
 ; configuration
 CONFIG_2A := 1
 
 CONFIG_SCRTCH_ORDER := 2
 
 ; zero page
-
-ZP_START = $10
+ZP_START = .sizeof(BIOSZP)
 ZP1_SIZE = $0A
 ZP2_SIZE = $06
 ZP3_SIZE = $0B
@@ -44,5 +45,4 @@ SAVE:
     rts
 
 UPTIME:
-    jsr     uptime_print
-    rts
+    jmp     uptime_print

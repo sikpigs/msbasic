@@ -80,6 +80,7 @@
 		keyword_rts "NEW", NEW
 
 .ifdef PLBS
+		keyword_rts "SYS", SYS
 		keyword_rts "LCDCMD", LCDCMD
 		keyword_rts "LCDPRINT", LCDPRINT
 		keyword_rts "UPTIME", UPTIME

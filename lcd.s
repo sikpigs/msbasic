@@ -1,7 +1,7 @@
 .segment "CODE"
 .ifdef PLBS
 .import putcmd_lcd
-.importzp bios_params
+.importzp bios_public
 
 LCDCMD:
     jsr     GETBYT
@@ -27,9 +27,9 @@ LCDCMD:
 @lcdcmd:   
     ; Setup bios_params pointer with address of BUFFER
     lda     #<BUFFER
-    sta     bios_params
+    sta     bios_public + LCDCmdArgs::data_ptr + Ptr::lo
     lda     #>BUFFER
-    sta     bios_params + 1
+    sta     bios_public + LCDCmdArgs::data_ptr + Ptr::hi
 
     pla                     ; Pull command off stack
     jsr     putcmd_lcd
